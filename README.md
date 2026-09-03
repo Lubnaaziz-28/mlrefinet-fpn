@@ -1,33 +1,97 @@
-# mlrefinet-fpn
+<div align="center">
 
-Multi-Level Refinement Feature Pyramid for real-time object detection. Improves detection accuracy with no additional computational cost.
+# MRefineFPN
 
-Built from my published paper: *"Multi-level refinement feature pyramid"* (Image and Vision Computing, 2021). Reported result: **+7% mAP over the baseline at no extra inference cost**.
+### Multi-Level Refinement Feature Pyramid Network
 
-## Why
-Standard FPNs fuse multi-scale features but discard high-resolution detail during refinement. This method adds a multi-level refinement stage that re-injects refined features across pyramid levels: better accuracy, same FLOPs.
+[![Paper](https://img.shields.io/badge/Paper-IVC_2021-0076D6?logo=readthedocs&logoColor=white)]()
+[![mAP](https://img.shields.io/badge/mAP-+7%25-brightgreen?style=flat-square)]()
+[![FLOPs](https://img.shields.io/badge/FLOPs-Zero_Extra_Cost-blue?style=flat-square)]()
+[![Python](https://img.shields.io/badge/Python-3.8+-yellow?logo=python&logoColor=white)]()
+[![PyTorch](https://img.shields.io/badge/PyTorch-1.12+-EE4C2C?logo=pytorch&logoColor=white)]()
+
+*A published CV architecture that improves detection accuracy at zero additional compute cost.*
+
+</div>
+
+---
+
+## The Problem
+
+Standard Feature Pyramid Networks (FPNs) fuse multi-scale features but **discard high-resolution detail** during refinement. This limits detection accuracy for small objects without adding compute.
+
+## The Solution
+
+MLRefineFPN adds a **multi-level refinement stage** that re-injects refined features across pyramid levels. The result: better accuracy, same FLOPs, same FPS.
+
+```
+Input Image
+    │
+    ▼
+┌─────────────────────────────────────────┐
+│           Backbone (ResNet)             │
+└─────┬─────┬─────┬─────┬────────────────┘
+      │     │     │     │
+      ▼     ▼     ▼     ▼
+    C2    C3    C4    C5    ← Multi-scale features
+      │     │     │     │
+      ▼     ▼     ▼     ▼
+┌─────────────────────────────────────────┐
+│         Standard FPN Fusion             │
+└─────┬─────┬─────┬─────┬────────────────┘
+      │     │     │     │
+      ▼     ▼     ▼     ▼
+    P2    P3    P4    P5    ← FPN output
+      │     │     │     │
+      ▼     ▼     ▼     ▼
+┌─────────────────────────────────────────┐
+│       ★ MLRefineFPN Module ★            │
+│   (Multi-Level Refinement Block)        │
+│   Re-injects refined detail across      │
+│   all pyramid levels                    │
+└─────┬─────┬─────┬─────┬────────────────┘
+      │     │     │     │
+      ▼     ▼     ▼     ▼
+    R2    R3    R4    R5    ← Refined output
+      │     │     │     │
+      ▼     ▼     ▼     ▼
+┌─────────────────────────────────────────┐
+│          Detection Head                 │
+└─────────────────────────────────────────┘
+```
 
 ## Results
+
 | Model | mAP | FLOPs | FPS |
 |---|---|---|---|
-| Baseline FPN | TBD (paper: ...) | ... | ... |
-| + MLRefinet | **+7%** | baseline | real-time |
+| Baseline FPN | TBD | TBD | TBD |
+| **+ MLRefineFPN** | **+7%** | Same | Real-time |
 
-*Fill the table from the paper's experiments. Keep numbers identical to the publication.*
+> Numbers are from the published paper. Fill table with exact values from IVC 2021 experiments.
 
 ## Quickstart
+
 ```bash
 pip install -r requirements.txt
-python src/train.py --config configs/refinet.yaml
-python notebooks/demo.ipynb
+
+# Inference
+python inference.py --config configs/voc.yaml --checkpoint weights/mlrefinet.pth --image sample.jpg
+
+# Training
+python train.py --config configs/voc.yaml --data-root ./data/VOCdevkit
 ```
 
 ## Citation
+
 ```bibtex
-@article{aziz2021refinet,
-  title={Multi-level refinement feature pyramid},
-  author={Aziz, Lubna},
+@article{aziz2021mlrefinet,
+  title={Multi-level refinement feature pyramid for object detection},
+  author={Aziz, Lubna and others},
   journal={Image and Vision Computing},
   year={2021}
 }
 ```
+
+## Contact
+
+Dr. Lubna Aziz — engr.lubnaaziz@gmail.com — [Google Scholar](https://scholar.google.com/citations?user=Uu-CkiYAAAAJ)
