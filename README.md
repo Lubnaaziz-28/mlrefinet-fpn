@@ -94,4 +94,4 @@ python train.py --config configs/voc.yaml --data-root ./data/VOCdevkit
 
 ## Contact
 
-Dr. Lubna Aziz — engr.lubnaaziz@gmail.com — [Google Scholar](https://scholar.google.com/citations?user=Uu-CkiYAAAAJ)
+Dr. Lubna Aziz, engr.lubnaaziz@gmail.com, [Google Scholar](https://scholar.google.com/citations?user=Uu-CkiYAAAAJ)
