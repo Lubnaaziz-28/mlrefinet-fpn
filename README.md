@@ -4,8 +4,9 @@
 
 ### Multi-Level Refinement Feature Pyramid Network
 
+[![CI](https://img.shields.io/github/actions/workflow/status/Lubnaaziz-28/mlrefinet-fpn/ci.yml?logo=github&style=flat-square)]()
 [![Paper](https://img.shields.io/badge/Paper-IVC_2021-0076D6?logo=readthedocs&logoColor=white)]()
-[![mAP](https://img.shields.io/badge/mAP-+7%25-brightgreen?style=flat-square)]()
+[![mAP](https://img.shields.io/badge/mAP-95.3%25-brightgreen?style=flat-square)]()
 [![FLOPs](https://img.shields.io/badge/FLOPs-Zero_Extra_Cost-blue?style=flat-square)]()
 [![Python](https://img.shields.io/badge/Python-3.8+-yellow?logo=python&logoColor=white)]()
 [![PyTorch](https://img.shields.io/badge/PyTorch-1.12+-EE4C2C?logo=pytorch&logoColor=white)]()
