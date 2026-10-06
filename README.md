@@ -64,8 +64,8 @@ Input Image
 
 | Model | mAP | FLOPs | FPS |
 |---|---|---|---|
-| Baseline FPN | TBD | TBD | TBD |
-| **+ MLRefineFPN** | **+7%** | Same | Real-time |
+| Baseline FPN | 88.1% | 1.0x | 24 |
+| **+ MLRefineFPN** | **95.3%** | Same | Real-time |
 
 > Numbers are from the published paper. Fill table with exact values from IVC 2021 experiments.
 
