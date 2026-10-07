@@ -1,0 +1,16 @@
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.git/
+.github/
+tests/
+*.pt
+*.pth
+*.onnx
+data/
+out/
+demo.gif
+*.log
+.venv/
+venv/
+env/

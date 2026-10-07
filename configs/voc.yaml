@@ -1,0 +1,48 @@
+# PASCAL VOC 2012 configuration for MLRefineFPN
+model:
+  num_classes: 20
+  in_channels: 256
+  out_channels: 256
+  num_refinements: 2
+
+data:
+  root: ./data
+  year: "2012"
+
+train:
+  epochs: 100
+  batch_size: 16
+  lr: 0.001
+  momentum: 0.9
+  weight_decay: 0.0005
+  lr_decay_steps: [60, 80]
+  lr_decay_gamma: 0.1
+
+eval:
+  score_threshold: 0.5
+  iou_threshold: 0.5
+  max_dets: 100
+
+# PASCAL VOC class names (index 0 unused)
+classes:
+  - background
+  - airplane
+  - bicycle
+  - bird
+  - boat
+  - bottle
+  - bus
+  - car
+  - cat
+  - chair
+  - cow
+  - diningtable
+  - dog
+  - horse
+  - motorbike
+  - person
+  - pottedplant
+  - sheep
+  - sofa
+  - train
+  - tvmonitor

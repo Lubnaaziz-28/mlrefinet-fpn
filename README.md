@@ -5,6 +5,7 @@
 ### Multi-Level Refinement Feature Pyramid Network
 
 [![CI](https://img.shields.io/github/actions/workflow/status/Lubnaaziz-28/mlrefinet-fpn/ci.yml?logo=github&style=flat-square)]()
+[![Docker](https://img.shields.io/badge/Docker-ghcr.io/Lubnaaziz-28/mlrefinet-fpn:latest-blue?logo=docker&style=flat-square)]()
 [![Paper](https://img.shields.io/badge/Paper-IVC_2021-0076D6?logo=readthedocs&logoColor=white)]()
 [![mAP](https://img.shields.io/badge/mAP-95.3%25-brightgreen?style=flat-square)]()
 [![FLOPs](https://img.shields.io/badge/FLOPs-Zero_Extra_Cost-blue?style=flat-square)]()
@@ -16,6 +17,61 @@
 </div>
 
 ---
+
+## Live Demo
+
+Run real-time webcam object detection with a single Docker command:
+
+```bash
+./demo.sh
+```
+
+This launches a Gradio UI at `http://localhost:7860` with your webcam. It auto-detects CUDA and falls back to CPU.
+
+![demo](demo.gif)
+
+### One-Docker-Command (GPU)
+
+```bash
+docker run --rm --gpus all -p 7860:7860 ghcr.io/lubnaaziz-28/mlrefinet-fpn:latest
+```
+
+Or build locally:
+
+```bash
+# CPU
+docker build -t mlrefinet-fpn:cpu . && docker run --rm -p 7860:7860 mlrefinet-fpn:cpu
+
+# GPU (requires nvidia-container-toolkit)
+docker build --buildarg BASE_IMAGE=nvidia/cuda:12.2.0-runtime-ubuntu22.04 -t mlrefinet-fpn:gpu .
+docker run --rm --gpus all -p 7860:7860 mlrefinet-fpn:gpu
+```
+
+### Without Docker
+
+```bash
+pip install -r requirements.txt
+./demo.sh
+```
+
+## Quickstart
+
+```bash
+# 1. Install dependencies
+pip install -r requirements.txt
+
+# 2. (Optional) Export the model to ONNX for fast CPU/GPU inference
+python export_onnx.py --config configs/voc.yaml --checkpoint weights/mlrefinet.pth --output mlrefinet.onnx
+
+# 3. Live webcam detection
+./demo.sh
+
+# 4. Single-image inference
+python inference.py --config configs/voc.yaml --checkpoint weights/mlrefinet.pth --image sample.jpg
+
+# 5. Training
+python train.py --config configs/voc.yaml --data-root ./data/VOCdevkit
+```
 
 ## The Problem
 
@@ -69,18 +125,6 @@ Input Image
 | **+ MLRefineFPN** | **95.3%** | Same | Real-time |
 
 > Numbers are from the published paper. Fill table with exact values from IVC 2021 experiments.
-
-## Quickstart
-
-```bash
-pip install -r requirements.txt
-
-# Inference
-python inference.py --config configs/voc.yaml --checkpoint weights/mlrefinet.pth --image sample.jpg
-
-# Training
-python train.py --config configs/voc.yaml --data-root ./data/VOCdevkit
-```
 
 ## Citation
 
