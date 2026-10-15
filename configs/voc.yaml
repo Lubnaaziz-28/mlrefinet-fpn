@@ -1,0 +1,34 @@
+# VOC-style config for mlrefinet-fpn
+model:
+  name: "mlrefinet_fpn"
+  num_classes: 20  # VOC classes
+  backbone: "resnet50"
+  fpn_channels: 256
+  pretrained: true
+
+train:
+  batch_size: 8
+  epochs: 50
+  lr: 0.001
+  lr_scheduler: "cosine"
+  weight_decay: 0.0001
+  momentum: 0.9
+  num_workers: 4
+  grad_clip: 10.0
+
+data:
+  train_ann: "data/train.json"
+  val_ann: "data/val.json"
+  img_dir: "data/images"
+  input_size: [640, 640]
+  augment: true
+
+output:
+  save_dir: "outputs"
+  save_period: 5
+  export_onnx: true
+
+wandb:
+  enabled: false
+  project: "mlrefinet-fpn"
+  entity: null

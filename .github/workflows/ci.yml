@@ -1,0 +1,116 @@
+name: CI Test Training
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  test-training:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+        cache: 'pip'
+        
+    - name: Install system dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libgl1-mesa-glx libglib2.0-0
+        
+    - name: Install Python dependencies
+      run: |
+        pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install albumentations pycocotools pytest
+        
+    - name: Generate synthetic COCO dataset
+      run: |
+        python scripts/generate_synthetic_data.py --output data/synthetic --num-images 20 --num-classes 3
+        
+    - name: Verify data structure
+      run: |
+        ls -la data/synthetic/
+        python -c "
+        import json
+        with open('data/synthetic/train.json') as f:
+            d = json.load(f)
+        print(f'Train images: {len(d[\"images\"])}')
+        print(f'Train annotations: {len(d[\"annotations\"])}')
+        print(f'Categories: {[c[\"name\"] for c in d[\"categories\"]]}')
+        with open('data/synthetic/val.json') as f:
+            d = json.load(f)
+        print(f'Val images: {len(d[\"images\"])}')
+        "
+        
+    - name: Run training (2 epochs)
+      run: |
+        python train_custom.py \
+          --data-path data/synthetic \
+          --output-dir outputs/test \
+          --epochs 2 \
+          --batch-size 2 \
+          --lr 0.01 \
+          --num-workers 0 \
+          --no-augment \
+          --backbone resnet50 \
+          --fpn-channels 128 \
+          --no-pretrained \
+          --save-period 1
+          
+    - name: Verify outputs
+      run: |
+        ls -la outputs/test/
+        python -c "
+        import torch
+        checkpoint = torch.load('outputs/test/best_model.pth', map_location='cpu')
+        print(f'Epoch: {checkpoint[\"epoch\"]}')
+        print(f'Best val loss: {checkpoint[\"best_val_loss\"]:.4f}')
+        print(f'Config keys: {list(checkpoint[\"config\"].keys())}')
+        "
+        
+    - name: Test ONNX export
+      run: |
+        python export_onnx.py \
+          --checkpoint outputs/test/best_model.pth \
+          --output outputs/test/model.onnx \
+          --num-classes 3 \
+          --backbone resnet50 \
+          --fpn-channels 128
+          
+    - name: Verify ONNX model
+      run: |
+        python -c "
+        import onnx
+        import onnxruntime as ort
+        import numpy as np
+        
+        # Check ONNX model
+        model = onnx.load('outputs/test/model.onnx')
+        onnx.checker.check_model(model)
+        print('ONNX model validation: PASSED')
+        
+        # Test inference
+        session = ort.InferenceSession('outputs/test/model.onnx')
+        input_name = session.get_inputs()[0].name
+        dummy = np.random.randn(1, 3, 640, 640).astype(np.float32)
+        outputs = session.run(None, {input_name: dummy})
+        print(f'ONNX inference output shapes: {[o.shape for o in outputs]}')
+        print('ONNX inference: PASSED')
+        "
+        
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: test-outputs
+        path: outputs/test/
+        retention-days: 7
